@@ -1,7 +1,6 @@
 'use strict';
 
 let _ = require('lodash');
-let parts = []
 
 // list of all days and accepted abbreviations
 let all = [
@@ -84,7 +83,7 @@ let formatTime = (string) => {
   }
 
   // bump to 24 hour format
-  if (string.match(/p/i)) {
+  if (string.match(/p/i) && hour != 12) {
     hour += 12;
   }
   minute = parseInt(minute.replace(/[^0-9]/, ''));
@@ -103,36 +102,48 @@ let formatTime = (string) => {
 }
 
 let parse = (string) => {
-  console.log(string);
   let parts = [];
   let lastdays = [];
   let hours = { periods: [] };
 
-  string.split(",").forEach(part => {
-    parts.push(part.trim().toLowerCase());
-  });
-  parts.forEach(part => {
-    // get the days and see if we're using the previous day
-    let days = getDays(part);
-    if (days.length > 0) {
-      lastdays = days;
-    } else {
-      days = lastdays;
-    }
-    let times = getTimes(part);
-    if (times.length > 0) {
-      days.forEach(day => {
-        let period = {
-          openDay: day.toUpperCase(),
-          closeDay: day.toUpperCase(),
-          openTime: times[0],
-          closeTime: times[1]
-        };
+  if (string == "24 hours") {
+    _.forEach(all, day => {
+      let times = getTimes("24");
+      let period = {
+        openDay: day.index.toUpperCase(),
+        closeDay: day.index.toUpperCase(),
+        openTime: times[0],
+        closeTime: times[1]
+      };
+      hours.periods.push(period);
+    });
+  } else {
+    string.split(",").forEach(part => {
+      parts.push(part.trim().toLowerCase());
+    });
+    parts.forEach(part => {
+      // get the days and see if we're using the previous day
+      let days = getDays(part);
+      if (days.length > 0) {
+        lastdays = days;
+      } else {
+        days = lastdays;
+      }
+      let times = getTimes(part);
+      if (times.length > 0) {
+        days.forEach(day => {
+          let period = {
+            openDay: day.toUpperCase(),
+            closeDay: day.toUpperCase(),
+            openTime: times[0],
+            closeTime: times[1]
+          };
 
-        hours.periods.push(period);
-      });
-    }
-  });
+          hours.periods.push(period);
+        });
+      }
+    });
+  }
 
   return hours;
 }
