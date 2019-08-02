@@ -19,6 +19,14 @@ let getDays = (string) => {
   let days = [];
 
   // weekdays
+  if (string.match(/every/i)) {
+    for (let a = 0; a < all.length; a++) {
+      days.push(all[a].index);
+    }
+    return days;
+  }
+
+  // weekdays
   if (string.match(/weekda/i)) {
     for (let a = 0; a < 5; a++) {
       days.push(all[a].index);
