@@ -91,7 +91,9 @@ let formatTime = (string) => {
   }
 
   // bump to 24 hour format
-  if (string.match(/p/i) && hour != 12) {
+  if (string.match(/a/i) && hour == 12) {
+    hour = 0;
+  } else if (string.match(/p/i) && hour != 12) {
     hour += 12;
   }
   minute = parseInt(minute.replace(/[^0-9]/, ''));
